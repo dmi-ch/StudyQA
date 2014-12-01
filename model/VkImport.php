@@ -2,6 +2,8 @@
 
 namespace studyqa\model;
 
+use Exception;
+
 error_reporting(E_ALL);
 ini_set("display_errors","On");
 
@@ -35,9 +37,9 @@ class VkImport {
         try{
             $streamContext = stream_context_create($this->headerOptions);
             $json = file_get_contents($methodUrlGetRegions, false, $streamContext);
-        }catch (\Exception $e){
+        }catch (Exception $e){
             echo('ERROR '.$e);
-
+            exit();
         }
 
         $regions=json_decode($json, true);
@@ -52,8 +54,14 @@ class VkImport {
         }else{
             $region='';
         }
-        $methodUrlGetCities= 'http://api.vk.com/method/database.getCities?v=5.27&need_all='.$need_all.'&offset='.$offset.'&count='.$count.'&country_id=' . $countryId.$region;
-        $streamContext = stream_context_create($this->headerOptions);
+        try{
+            $methodUrlGetCities= 'http://api.vk.com/method/database.getCities?v=5.27&need_all='.$need_all.'&offset='.$offset.'&count='.$count.'&country_id=' . $countryId.$region;
+            $streamContext = stream_context_create($this->headerOptions);
+        }catch (Exception $e){
+            echo('ERROR '.$e);
+            exit();
+        }
+
         $json = file_get_contents($methodUrlGetCities, false, $streamContext);
         $cities=json_decode($json, true);
         return $cities;

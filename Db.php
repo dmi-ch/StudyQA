@@ -2,6 +2,7 @@
 
 namespace studyqa;
 use mysqli;
+
 error_reporting(E_ALL);
 ini_set("display_errors","On");
     /**
@@ -20,6 +21,10 @@ class Db{
     public static function init(){
 
         $mysqli = new mysqli(self::$DB_HOST,self::$DB_LOGIN,self::$DB_PASSWORD,self::$DB_NAME,self::$DB_PORT);
+
+        if ($mysqli->connect_error) {
+            die('Connect Error (' . $mysqli->connect_errno . ') ' . $mysqli->connect_error);
+        }
         if (mysqli_connect_errno()) {
             return printf("Не удалось подключиться: %s\n", mysqli_connect_error());
         }

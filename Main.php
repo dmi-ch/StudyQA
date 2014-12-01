@@ -62,7 +62,6 @@ class Main{
     }
 
     public function importCitiesAll($countryId,$offset,$queryCount,$limit,$needAll){
-        //limit count of import rows
         $affected_rows=0;
         if($countryId==0){
             echo 'Error: country id couldn`t be 0';
@@ -72,20 +71,30 @@ class Main{
             exit();
         }
         while($offset<=$limit){
-            $resultImportCities=$this->vkImportModel->getCities($countryId,$offset,$queryCount,null,$needAll);
 
+            $resultImportCities=$this->vkImportModel->getCities($countryId,$offset,$queryCount,null,$needAll);
             $importedCities=$resultImportCities['response']['items'];
             foreach($importedCities as $i){
-                $existCity=$this->cityModel->getById($i['id']);
-                // echo json_encode($i).'  $i'.json_encode($i['id']);
-                if(!($i['id']==$existCity['city_id'])){
-                    $region=array_key_exists('region',$i)  ? $i['region']  : null;
-                    $area=array_key_exists('area',$i)  ? $i['area']  : null;
-                    $this->cityModel->setOne($countryId,$region,$area,$i['id'],$i['title']);
-                    $affected_rows++;
-                }
+
+                    $existCity=$this->cityModel->getById($i['id']);
+                    if(!($i['id']==$existCity['city_id'])){
+                        if (array_key_exists('region',$i)) {
+                            $region=$i['region'];
+                        } else{
+                            $region=null;
+                        }
+                        if (array_key_exists('area',$i)) {
+                            $area=$i['area'];
+                        } else{
+                            $area=null;
+                        }
+                        //echo 'reg:'.$region.'</br>';
+                        $this->cityModel->setOne($countryId,$region,$area,$i['id'],$i['title']);
+                        $affected_rows++;
+                    }
+
+
             }
-            echo 'offset:'.$offset.'</br>';
             $offset+=$queryCount;
 
         }
@@ -99,7 +108,8 @@ class Main{
 $test=new Main();
 
 //$test->importRegions($test::COUNTRY_RUSSIA_ID,1,5,20);
-$test->importCitiesAll($test::COUNTRY_RUSSIA_ID,10,10,30,1);
+$test->importCitiesAll($test::COUNTRY_RUSSIA_ID,1,100,700,0);
+
 
 
 

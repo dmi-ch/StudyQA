@@ -64,10 +64,8 @@ class City {
     public function countRecords(){
         if(!(isset($this->mysqli) AND $this->mysqli!==null)){
 
-            $this->mysqli=$mysqli=Db::init();
-            if(!($mysqli instanceof \mysqli)){
-                exit ($mysqli);
-            }
+            $this->mysqli=Db::init();
+
         }
         $result=$this->mysqli->query("SELECT COUNT(*) FROM city");
         $row = $result->fetch_row();
@@ -79,16 +77,26 @@ class City {
 
 
     public function setOne($countryId,$region,$area,$city_id,$city_name){
-        $this->mysqli=$mysqli=Db::init();
+        $this->mysqli=Db::init();
         if(!($this->mysqli instanceof mysqli)){
             exit ($this->mysqli);
         }
-        $stmt = $this->mysqli->prepare("INSERT INTO city (city_id, city_name,city_country_id,city_region,city_area) VALUES(?,?,?,?,?) ");
+        print_r($this->mysqli);
+
+
+        $stmt = $this->mysqli->prepare("INSERT INTO city (city_id, city_name,city_country_id,city_region_name,city_area) VALUES(?,?,?,?,?) ");
+
+        if($stmt==false){
+            echo 'Не удалось выполнить prepare:';
+            echo $this->mysqli->error;
+            exit();
+        }
+
         $stmt->bind_param('isiss',$city_id,$city_name,$countryId,$region,$area);
 
         try{
             if (!empty($stmt)) {
-               $r=$stmt->execute();
+                $r=$stmt->execute();
                 if($r===false){
                     echo $this->mysqli->error;
                 }
