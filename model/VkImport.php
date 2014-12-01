@@ -30,26 +30,25 @@ class VkImport {
      *                                  }
      *                          }
      */
-     public function getRegions($countryId,$offset,$count){
+    public function getRegions($countryId,$offset,$count){
         $methodUrlGetRegions = 'http://api.vk.com/method/database.getRegions?v=5.27&offset='.$offset.'&count='.$count.'&country_id=' . $countryId;
-       try{
-           $streamContext = stream_context_create($this->headerOptions);
-           $json = file_get_contents($methodUrlGetRegions, false, $streamContext);
-       }catch (\Exception $e){
-           echo('ERROR '.$e);
+        try{
+            $streamContext = stream_context_create($this->headerOptions);
+            $json = file_get_contents($methodUrlGetRegions, false, $streamContext);
+        }catch (\Exception $e){
+            echo('ERROR '.$e);
 
-       }
-
+        }
 
         $regions=json_decode($json, true);
         return $regions;
 
-     }
+    }
 
 
-    public function getCities($countryId,$offset,$count,$region_id,$need_all){
-        if($region_id){
-            $region='&region_id='.$region_id;
+    public function getCities($countryId,$offset,$count,$regionId=null,$need_all){
+        if($regionId){
+            $region='&region_id='.$regionId;
         }else{
             $region='';
         }

@@ -2,23 +2,12 @@
 
 namespace studyqa\model;
 
+
+use Exception;
 use mysqli;
 use studyqa\Db;
 
-
-error_reporting(E_ALL);
-ini_set("display_errors","On");
-
-/**
- * This is the model class for table "region".
- * @property mysqli  $mysqli
- * @property integer $region_id
- * @property string  $region_name
- * @property array   $region_country_id
- */
-
-class Region
-{
+class City {
     var $mysqli;
     var $i=0;
 
@@ -30,7 +19,7 @@ class Region
         }
 
 
-        $stmt =$this->mysqli->prepare("SELECT * FROM region");
+        $stmt =$this->mysqli->prepare("SELECT * FROM city");
         $stmt->execute();
         $stmt->store_result();
         $meta = $stmt->result_metadata();
@@ -64,7 +53,7 @@ class Region
             exit ($this->mysqli);
         }
 
-        $result=$this->mysqli->query("SELECT  * FROM region WHERE region_id=$id");
+        $result=$this->mysqli->query("SELECT * FROM city WHERE city_id=$id");
         $row=$result->fetch_assoc();
         $this->mysqli->close();
 
@@ -80,7 +69,7 @@ class Region
                 exit ($mysqli);
             }
         }
-        $result=$this->mysqli->query("SELECT COUNT(*) FROM region");
+        $result=$this->mysqli->query("SELECT COUNT(*) FROM city");
         $row = $result->fetch_row();
         $this->mysqli->close();
 
@@ -89,19 +78,28 @@ class Region
     }
 
 
-    public function setOne($countryId,$region_id,$region_name){
+    public function setOne($countryId,$region,$area,$city_id,$city_name){
         $this->mysqli=$mysqli=Db::init();
         if(!($this->mysqli instanceof mysqli)){
             exit ($this->mysqli);
         }
-         $stmt = $this->mysqli->prepare("INSERT INTO region (region_id, region_name, region_country_id) VALUES(?,?,?) ");
-         $stmt->bind_param('isi',$region_id,$region_name,$countryId);
-         $stmt->execute();
-         $stmt->free_result();
-         $this->mysqli->close();
+        $stmt = $this->mysqli->prepare("INSERT INTO city (city_id, city_name,city_country_id,city_region,city_area) VALUES(?,?,?,?,?) ");
+        $stmt->bind_param('isiss',$city_id,$city_name,$countryId,$region,$area);
+
+        try{
+            if (!empty($stmt)) {
+               $r=$stmt->execute();
+                if($r===false){
+                    echo $this->mysqli->error;
+                }
+            }
+        }catch(Exception $e){
+            echo $e;
+        }
+
+        $stmt->free_result();
+        $this->mysqli->close();
 
 
     }
-
-
-}
+} 
