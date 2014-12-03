@@ -58,7 +58,7 @@ class Main{
             }
             $offset+=$queryCount;
         }
-        echo 'Script finished successfully. Imported rows: '.$affected_rows;
+        echo 'Script finished successfully. Imported Region rows: '.$affected_rows;
     }
 
     public function importCitiesAll($countryId,$offset,$queryCount,$limit,$needAll){
@@ -74,7 +74,8 @@ class Main{
 
             $resultImportCities=$this->vkImportModel->getCities($countryId,$offset,$queryCount,null,$needAll);
             $importedCities=$resultImportCities['response']['items'];
-            foreach($importedCities as $i){
+            if($resultImportCities['response']!=null){
+                foreach($importedCities as $i){
 
                     $existCity=$this->cityModel->getById($i['id']);
                     if(!($i['id']==$existCity['city_id'])){
@@ -94,11 +95,13 @@ class Main{
                     }
 
 
+                }
             }
+
             $offset+=$queryCount;
 
         }
-        echo 'Script finished successfully. Imported rows: '.$affected_rows;
+        echo 'Script finished successfully. Imported City rows: '.$affected_rows;
     }
 
 
@@ -108,7 +111,7 @@ class Main{
 $test=new Main();
 
 //$test->importRegions($test::COUNTRY_RUSSIA_ID,1,5,20);
-$test->importCitiesAll($test::COUNTRY_RUSSIA_ID,1,100,700,0);
+$test->importCitiesAll($test::COUNTRY_RUSSIA_ID,0,1000,100000,0);
 
 
 

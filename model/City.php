@@ -96,10 +96,10 @@ class City {
 
         try{
             if (!empty($stmt)) {
-                $r=$stmt->execute();
-                if($r===false){
-                    echo $this->mysqli->error;
-                }
+                //$r=$stmt->execute();
+               // if($r===false){
+               //     echo $this->mysqli->error;
+               // }
             }
         }catch(Exception $e){
             echo $e;
