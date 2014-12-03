@@ -56,7 +56,6 @@ class VkImport {
         }
         try{
             $methodUrlGetCities= 'http://api.vk.com/method/database.getCities?v=5.27&need_all='.$need_all.'&offset='.$offset.'&count='.$count.'&country_id=' . $countryId.$region;
-            echo $methodUrlGetCities;
             $streamContext = stream_context_create($this->headerOptions);
         }catch (Exception $e){
             echo('ERROR '.$e);
