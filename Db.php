@@ -30,7 +30,6 @@ class Db{
         }
 
         $mysqli->set_charset("utf8");
-
         return $mysqli;
     }
 }
