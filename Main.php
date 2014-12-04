@@ -2,8 +2,10 @@
 namespace studyqa;
 
 use studyqa\model\City;
+use studyqa\model\Country;
 use studyqa\model\Region;
 use SplClassLoader;
+use studyqa\model\Translate;
 use studyqa\model\VkImport;
 
 ini_set("max_execution_time", "360");
@@ -50,7 +52,7 @@ class Main{
      * import all regions with check existing records in table `region`
      */
     public function importRegions($countryId,$offset,$queryCount,$limit){
-
+        ob_start();
         //limit count of import rows
         $affected_rows=0;
         if($countryId==0){
@@ -160,6 +162,8 @@ class Main{
                     $regionId=$regionRow['region_id'];
                     echo 'Region name found, updating region_id'.$regionId;
                     $modelCity->updateRow($rowCity['city_id'],'city_region_id',$regionId);
+                }else{
+                    $modelCity->updateRow($rowCity['city_id'],'city_region_id',null);
                 }
             }
         }
@@ -167,6 +171,7 @@ class Main{
     }
 
     public function translateCityNames(){
+        ob_start();
         $modelCity=$this->getModel('city');
         $allRowsCity=$modelCity->getAll();
 
@@ -174,16 +179,34 @@ class Main{
         $allRowsCountry=$modelCity->getAll();
 
         //foreach($allRowsCountry as $rowCountry){
-        //      $lan=$rowCountry['country_alfa2'];
+        //      $lang=$rowCountry['country_alfa2'];
 
-       // }
-        $lanEn='en';
-
+        // }
+        $langEn='en';
+        $modelTranslate=new Translate();
+        $stop=0;
         foreach($allRowsCity as $rowCity){
+            if ($stop>=1000){
+                exit();
+            };
+            if($rowCity['city_name_en']==null || $rowCity['city_name_en']==''|| $rowCity['city_name_en']=='Array'){
+                echo '<p style="font-size: 16px">'.date("Y-m-d H:i:s").' Getting data from yandex api,city:'.json_encode($rowCity,JSON_UNESCAPED_UNICODE).'    ...';
+                $tr=$modelTranslate->translate($rowCity['city_name'],$langEn);
+                ob_flush();
+                echo ' Translated successfuly:'.json_encode($tr).'</br>';
+                ob_flush();
+                if (!empty($tr)) {
+                    echo '<p style="font-size: 16px">'.date("Y-m-d H:i:s").' Starting update city_id:'.$rowCity['city_id'].'   ...';
+                    ob_flush();
+                    $modelCity->updateRow($rowCity['city_id'],'city_name_en',$tr);
+                }
+                $stop++;
+            }
 
         }
-
+        ob_end_flush();
     }
+
 
 
 }
@@ -191,7 +214,8 @@ class Main{
 
 $test=new Main();
 //$test->importCitiesAll($test::COUNTRY_RUSSIA_ID,0,1000,10000000,1);
-$test->importRegions($test::COUNTRY_RUSSIA_ID,0,1000,2000);
+//$test->importRegions($test::COUNTRY_RUSSIA_ID,0,1000,2000);
 //$test->fillRegionId();
+//$test->translateCityNames();
 
 

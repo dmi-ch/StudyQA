@@ -149,7 +149,6 @@ class City {
         }catch(Exception $e){
             echo $e;
         }
-        $stmt->execute();
         $stmt->free_result();
         $this->mysqli->close();
     }
